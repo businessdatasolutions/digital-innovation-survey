@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Digital Innovation Survey Results</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash/4.17.21/lodash.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 p-6">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-8">Digital Innovation Survey Results</h1>
+    
+    <!-- Loading state -->
+    <div id="loadingState" class="text-center py-8">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+      <p class="text-gray-600">Loading survey results...</p>
+    </div>
+
+    <!-- Error state -->
+    <div id="errorState" class="hidden text-center py-8">
+      <div class="text-red-600 mb-4">Failed to load results</div>
+      <button onclick="loadResults()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Try Again
+      </button>
+    </div>
+
+    <!-- Results container -->
+    <div id="resultsContainer" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Charts will be dynamically added here -->
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const CONFIG = {
+      BASEROW_API_TOKEN: 'ySU2fIwcC1uCxWtoaK5HJ6lfDASo2z9i',
+      BASEROW_TABLE_ID: '399246',
+      BASEROW_API_URL: `https://api.baserow.io/api/database/rows/table/399246/?user_field_names=true`
+    };
+
+    // Questions data (same as survey)
+    const questions = [
+        {
+            "id": 1,
+            "text": "How close is your organization to the ideal?",
+            "type": "scale",
+            "min": 1,
+            "max": 10,
+            "labels": {
+                "1": "Not at all close",
+                "10": "Very close"
+            }
+        },
+        {
+            "id": 2,
+            "text": "Moved closer to ideal over past three years",
+            "type": "likert"
+        },
+        {
+            "id": 3,
+            "text": "Digital innovation is a strength",
+            "type": "likert"
+        },
+        {
+            "id": 4,
+            "text": "Digital innovation is a core competency",
+            "type": "likert"
+        },
+        {
+            "id": 5,
+            "text": "Enough resources for innovation",
+            "type": "likert"
+        },
+        {
+            "id": 6,
+            "text": "Supports entrepreneurial mindset",
+            "type": "likert"
+        },
+        {
+            "id": 7,
+            "text": "Work time for innovation",
+            "type": "select",
+            "options": [
+                "No time at all",
+                "<10%",
+                "10-24%",
+                "25-49%",
+                "50-75%",
+                ">75%"
+            ]
+        }
+    ];
+
+    const likertLabels = [
+      "Strongly disagree",
+      "Disagree",
+      "Neither agree nor disagree",
+      "Agree",
+      "Strongly agree"
+    ];
+
+    async function loadResults() {
+      const loadingState = document.getElementById('loadingState');
+      const errorState = document.getElementById('errorState');
+      const resultsContainer = document.getElementById('resultsContainer');
+
+      loadingState.classList.remove('hidden');
+      errorState.classList.add('hidden');
+      resultsContainer.classList.add('hidden');
+
+      try {
+        const responses = await fetchAllResponses();
+        showResults(responses);
+        loadingState.classList.add('hidden');
+        resultsContainer.classList.remove('hidden');
+      } catch (error) {
+        console.error('Error loading results:', error);
+        loadingState.classList.add('hidden');
+        errorState.classList.remove('hidden');
+      }
+    }
+
+    async function fetchAllResponses() {
+      try {
+        let allResults = [];
+        let hasMore = true;
+        let page = 1;
+        
+        while (hasMore) {
+          const response = await fetch(`${CONFIG.BASEROW_API_URL}&page=${page}`, {
+            headers: {
+              'Authorization': `Token ${CONFIG.BASEROW_API_TOKEN}`,
+            }
+          });
+
+          if (!response.ok) throw new Error('Failed to fetch responses');
+          
+          const data = await response.json();
+          allResults = allResults.concat(data.results);
+          
+          hasMore = data.next !== null;
+          page++;
+        }
+        
+        return allResults;
+      } catch (error) {
+        console.error('Error fetching responses:', error);
+        throw error;
+      }
+    }
+
+    function createBarChart(question, responses, containerId) {
+      const ctx = document.getElementById(containerId).getContext('2d');
+      
+      // Process data based on question type
+      let labels, data;
+      if (question.type === 'likert') {
+        labels = likertLabels;
+        data = new Array(5).fill(0);
+        responses.forEach(response => {
+          const value = response[`question_${question.id}`];
+          if (value !== undefined) {
+            data[value]++;
+          }
+        });
+      } else if (question.type === 'scale') {
+        labels = Array.from({length: question.max - question.min + 1}, (_, i) => i + question.min);
+        data = new Array(question.max - question.min + 1).fill(0);
+        responses.forEach(response => {
+          const value = response[`question_${question.id}`];
+          if (value !== undefined) {
+            data[value - question.min]++;
+          }
+        });
+      } else if (question.type === 'select') {
+        labels = question.options;
+        data = new Array(question.options.length).fill(0);
+        responses.forEach(response => {
+          const value = response[`question_${question.id}`];
+          if (value !== undefined) {
+            data[value]++;
+          }
+        });
+      }
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Number of Responses',
+            data: data,
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: question.text,
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function showResults(responses) {
+      const container = document.getElementById('resultsContainer');
+      container.innerHTML = ''; // Clear existing content
+
+      // Create charts for each question
+      questions.forEach(question => {
+        const chartContainer = document.createElement('div');
+        chartContainer.className = 'bg-white p-6 rounded-lg shadow-md';
+        
+        const canvas = document.createElement('canvas');
+        const canvasId = `chart-${question.id}`;
+        canvas.id = canvasId;
+        chartContainer.appendChild(canvas);
+        container.appendChild(chartContainer);
+        
+        createBarChart(question, responses, canvasId);
+      });
+
+      // Add summary stats
+      const summaryContainer = document.createElement('div');
+      summaryContainer.className = 'col-span-1 md:col-span-2 bg-white p-6 rounded-lg shadow-md';
+      summaryContainer.innerHTML = `
+        <h2 class="text-xl font-bold mb-4">Summary Statistics</h2>
+        <p class="text-gray-600">Total Responses: ${responses.length}</p>
+        <p class="text-gray-600">Latest Response: ${new Date(Math.max(...responses.map(r => new Date(r.submission_date)))).toLocaleDateString()}</p>
+      `;
+      container.appendChild(summaryContainer);
+    }
+
+    // Initialize
+    loadResults();
+  </script>
+</body>
+</html>

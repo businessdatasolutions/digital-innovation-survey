@@ -3,37 +3,21 @@
 <head>
   <title>Digital Innovation Survey</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash/4.17.21/lodash.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
 </head>
 <body class="bg-gray-50 p-6">
   <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
     <h1 class="text-2xl font-bold mb-6">Digital Innovation Survey</h1>
     
-    <!-- Loading state -->
-    <div id="loadingState" class="text-center py-8">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-      <p class="text-gray-600">Loading survey questions...</p>
-    </div>
-
-    <!-- Error state -->
-    <div id="errorState" class="hidden text-center py-8">
-      <div class="text-red-600 mb-4">
-        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      </div>
-      <p class="text-gray-600">Failed to load survey questions. Please refresh the page or try again later.</p>
-      <button onclick="loadQuestions()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-        Try Again
-      </button>
-    </div>
-    
     <!-- Company display -->
-    <div id="companyInfo" class="mb-6 p-4 bg-blue-50 rounded-lg hidden">
+    <div id="companyInfo" class="mb-6 p-4 bg-blue-50 rounded-lg">
       <p class="text-blue-800">Loading company information...</p>
     </div>
 
     <!-- Survey form -->
-    <form id="surveyForm" class="space-y-6 hidden">
+    <form id="surveyForm" class="space-y-6">
       <div class="mb-4">
         <div class="flex justify-between mb-1">
           <span class="text-sm text-gray-600">Survey Progress</span>
@@ -64,45 +48,96 @@
     </div>
   </div>
 
+  <!-- Radar chart -->
+  <div id="chartModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg max-w-4xl w-full mx-4">
+      <h3 class="text-xl font-bold mb-4">Survey Results Comparison</h3>
+      <div class="w-full h-[600px]">
+        <canvas id="radarChart"></canvas>
+      </div>
+      <button id="chartClose" class="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Close</button>
+    </div>
+  </div>
+
   <script>
     // Configuration
     const CONFIG = {
-      QUESTIONS_URL: 'https://raw.githubusercontent.com/businessdatasolutions/digital-innovation-survey/refs/heads/main/survey-questions.json',  // Replace with your JSON endpoint
       BASEROW_API_TOKEN: 'ySU2fIwcC1uCxWtoaK5HJ6lfDASo2z9i',
-      BASEROW_TABLE_ID: '399241',
-      BASEROW_API_URL: `https://api.baserow.io/api/database/rows/table/399241/?user_field_names=true`
+      BASEROW_TABLE_ID: '399246',
+      BASEROW_API_URL: `https://api.baserow.io/api/database/rows/table/399246/?user_field_names=true`
     };
 
+    // Embedded questions data
+    const questions = [
+        {
+            "id": 1,
+            "text": "Imagine an ideal organization utilizing digital technologies and capabilities to improve processes, engage talent across the organization, and drive new and value-generating business models. How close is your organization to that ideal?",
+            "type": "scale",
+            "min": 1,
+            "max": 10,
+            "labels": {
+                "1": "Not at all close",
+                "10": "Very close"
+            }
+        },
+        {
+            "id": 2,
+            "text": "My organization has moved significantly closer to that ideal over the past three years.",
+            "type": "likert"
+        },
+        {
+            "id": 3,
+            "text": "Digital innovation is a strength of my organization.",
+            "type": "likert"
+        },
+        {
+            "id": 4,
+            "text": "My organization's leaders think that digital innovation is or should be a core competency of our organization.",
+            "type": "likert"
+        },
+        {
+            "id": 5,
+            "text": "My organization provides enough resources (time, money, people) to support innovation.",
+            "type": "likert"
+        },
+        {
+            "id": 6,
+            "text": "My organization cultivates or supports an entrepreneurial mindset among its employees.",
+            "type": "likert"
+        },
+        {
+            "id": 7,
+            "text": "What portion of your work involves the opportunity to experiment and innovate?",
+            "type": "select",
+            "options": [
+                "No time at all",
+                "<10%",
+                "10-24%",
+                "25-49%",
+                "50-75%",
+                ">75%"
+            ]
+        }
+    ];
+
     // State
-    let questions = [];
     let currentSection = 0;
     const responses = {
       company_id: new URLSearchParams(window.location.search).get('company'),
       submission_date: new Date().toISOString(),
     };
 
-    // Load questions from JSON
-    async function loadQuestions() {
-      document.getElementById('loadingState').classList.remove('hidden');
-      document.getElementById('errorState').classList.add('hidden');
-      document.getElementById('surveyForm').classList.add('hidden');
-
-      try {
-        const response = await fetch(CONFIG.QUESTIONS_URL);
-        if (!response.ok) throw new Error('Failed to load questions');
-        
-        questions = await response.json();
-        
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('surveyForm').classList.remove('hidden');
-        document.getElementById('companyInfo').classList.remove('hidden');
-        
-        loadCompanyInfo();
-        showQuestion(0);
-      } catch (error) {
-        console.error('Failed to load questions:', error);
-        document.getElementById('loadingState').classList.add('hidden');
-        document.getElementById('errorState').classList.remove('hidden');
+    // Initialize company info
+    function initializeCompanyInfo() {
+      const companyInfoDiv = document.getElementById('companyInfo');
+      if (responses.company_id) {
+        companyInfoDiv.innerHTML = `
+          <p class="text-blue-800">Company ID: <strong>${responses.company_id}</strong></p>
+        `;
+      } else {
+        companyInfoDiv.innerHTML = `
+          <p class="text-red-800">No company ID provided. Please check the URL.</p>
+        `;
       }
     }
 
@@ -188,7 +223,42 @@
       updateProgress();
     }
 
-    // Progress and navigation
+    function initRanking() {
+      const items = document.querySelectorAll('[draggable="true"]');
+      items.forEach(item => {
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+      });
+    }
+
+    function handleDragStart(e) {
+      e.dataTransfer.setData('text/plain', e.target.dataset.index);
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      const fromIndex = e.dataTransfer.getData('text/plain');
+      const toIndex = e.target.closest('[draggable="true"]').dataset.index;
+      const items = document.querySelectorAll('[draggable="true"]');
+      const parent = items[0].parentNode;
+      
+      if (fromIndex === toIndex) return;
+      
+      const itemHeight = items[0].offsetHeight;
+      items[fromIndex].style.transform = `translateY(${(toIndex - fromIndex) * itemHeight}px)`;
+      items[toIndex].style.transform = `translateY(${(fromIndex - toIndex) * itemHeight}px)`;
+      
+      setTimeout(() => {
+        parent.insertBefore(items[fromIndex], items[toIndex]);
+        items.forEach(item => item.style.transform = '');
+      }, 300);
+    }
+
     function updateProgress() {
       const progress = ((currentSection + 1) / questions.length) * 100;
       document.getElementById('progressBar').style.width = `${progress}%`;
@@ -199,39 +269,220 @@
         currentSection === questions.length - 1 ? 'Submit' : 'Next';
     }
 
-    // Baserow submission
+    function showStatus(success, message) {
+        const modal = document.getElementById('statusModal');
+        const title = document.getElementById('statusTitle');
+        const messageEl = document.getElementById('statusMessage');
+        
+        title.textContent = success ? 'Success!' : 'Error';
+        messageEl.textContent = message;
+        modal.classList.remove('hidden');
+    }
+
     async function submitToBaserow(data) {
-      try {
+    try {
+        // Create a cleaner data object that matches Baserow field names
+        const formattedData = {
+            company_id: data.company_id,
+            submission_date: data.submission_date
+        };
+
+        // Add question responses with the exact field names from Baserow
+        questions.forEach(q => {
+            formattedData[`question_${q.id}`] = parseInt(data[`question_${q.id}`], 10);
+        });
+
+        console.log("Submitting data:", formattedData);
+
         const response = await fetch(CONFIG.BASEROW_API_URL, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Token ${CONFIG.BASEROW_API_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data)
+            method: 'POST',
+            headers: {
+                'Authorization': `Token ${CONFIG.BASEROW_API_TOKEN}`,
+                'Content-Type': 'application/json',
+            },
+            // Remove the array wrapper
+            body: JSON.stringify(formattedData)
         });
 
         if (!response.ok) {
-          throw new Error('Failed to submit survey');
+            const errorDetails = await response.json();
+            console.log('Full error response:', JSON.stringify(errorDetails, null, 2));
+            throw new Error(`Failed to submit survey: ${JSON.stringify(errorDetails.detail)}`);
         }
 
         showStatus(true, 'Thank you for completing the survey! Your responses have been recorded.');
-      } catch (error) {
-        showStatus(false, 'There was an error submitting the survey. Please try again or contact support.');
-        console.error('Submission error:', error);
-      }
+        
+        setTimeout(async () => {
+            document.getElementById('statusModal').classList.add('hidden');
+            const allResponses = await fetchAllResponses();
+            createRadarChart(formattedData, allResponses);
+            document.getElementById('chartModal').classList.remove('hidden');
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Submission error details:', error);
+        showStatus(false, `There was an error submitting the survey: ${error.message}`);
+    }
+}
+
+    async function fetchAllResponses() {
+        try {
+            let allResults = [];
+            let hasMore = true;
+            let page = 1;
+            
+            while (hasMore) {
+                const response = await fetch(`${CONFIG.BASEROW_API_URL}&page=${page}`, {
+                    headers: {
+                        'Authorization': `Token ${CONFIG.BASEROW_API_TOKEN}`,
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to fetch responses');
+                
+                const data = await response.json();
+                allResults = allResults.concat(data.results);
+                
+                hasMore = data.next !== null;
+                page++;
+            }
+            
+            return allResults;
+        } catch (error) {
+            console.error('Error fetching responses:', error);
+            return [];
+        }
     }
 
-    // Status display
-    function showStatus(success, message) {
-      const modal = document.getElementById('statusModal');
-      const title = document.getElementById('statusTitle');
-      const messageEl = document.getElementById('statusMessage');
-      
-      title.textContent = success ? 'Success!' : 'Error';
-      messageEl.textContent = message;
-      modal.classList.remove('hidden');
+    function calculateAverages(responses) {
+    const sums = {};
+    const counts = {};
+    const averages = {};
+
+    // Initialize sums and counts
+    questions.forEach(q => {
+        sums[`question_${q.id}`] = 0;
+        counts[`question_${q.id}`] = 0;
+    });
+
+    // Calculate sums and counts
+    responses.forEach(response => {
+        questions.forEach(q => {
+        const key = `question_${q.id}`;
+        if (response[key]) {
+            sums[key] += Number(response[key]);
+            counts[key]++;
+        }
+        });
+    });
+
+    // Calculate averages
+    questions.forEach(q => {
+        const key = `question_${q.id}`;
+        averages[key] = counts[key] > 0 ? sums[key] / counts[key] : 0;
+    });
+
+    return averages;
     }
+
+    function createRadarChart(currentResponse, allResponses) {
+    const ctx = document.getElementById('radarChart').getContext('2d');
+    const averages = calculateAverages(allResponses);
+    
+    // Filter out the current response from allResponses
+    const filteredResponses = allResponses.filter(response => 
+        response.company_id !== currentResponse.company_id
+    );
+    
+    const labels = questions.map(q => q.text.substring(0, 50) + '...');
+    const datasets = [
+        // Average line
+        {
+            label: `Average of ${allResponses.length} responses`,
+            data: questions.map(q => averages[`question_${q.id}`]),
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            fill: true,
+            borderWidth: 2
+        },
+        // Current response
+        {
+            label: `Your Response (${currentResponse.company_id})`,
+            data: questions.map(q => currentResponse[`question_${q.id}`]),
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            fill: true,
+            borderWidth: 2
+        },
+        // Other responses (with high opacity)
+        ...filteredResponses.map((response, index) => ({
+            label: `Other Response ${index + 1}`,
+            data: questions.map(q => response[`question_${q.id}`]),
+            borderColor: `rgba(200, 200, 200, 0.1)`,
+            backgroundColor: 'rgba(200, 200, 200, 0.05)',
+            fill: true,
+            borderWidth: 1,
+            hidden: true
+        }))
+    ];
+
+    // Create an array of max values for each question
+    const maxValues = questions.map(q => {
+        if (q.type === 'scale') return 10;
+        if (q.type === 'select') return q.options.length - 1;
+        return 4; // likert scale
+    });
+
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true,
+                    min: 0,
+                    max: Math.max(...maxValues),
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = context.raw;
+                            const questionIndex = context.dataIndex;
+                            const questionType = questions[questionIndex].type;
+                            
+                            if (questionType === 'likert') {
+                                const likertLabels = [
+                                    "Strongly disagree",
+                                    "Disagree",
+                                    "Neither agree nor disagree",
+                                    "Agree",
+                                    "Strongly agree"
+                                ];
+                                return `${context.dataset.label}: ${likertLabels[value]}`;
+                            } else if (questionType === 'select') {
+                                return `${context.dataset.label}: ${questions[questionIndex].options[value]}`;
+                            }
+                            return `${context.dataset.label}: ${value}`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
 
     // Event listeners
     document.getElementById('nextBtn').addEventListener('click', async () => {
@@ -268,8 +519,14 @@
     if (!responses.company_id) {
       showStatus(false, 'No company ID provided. Please check the URL and try again.');
     } else {
-      loadQuestions();
+      initializeCompanyInfo();
+      showQuestion(0);
     }
+
+    document.getElementById('chartClose').addEventListener('click', () => {
+    document.getElementById('chartModal').classList.add('hidden');
+    });
   </script>
 </body>
 </html>
+```
