@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Digital Innovation Survey</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash/4.17.21/lodash.min.js"></script>
+</head>
+<body class="bg-gray-50 p-6">
+  <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <h1 class="text-2xl font-bold mb-6">Digital Innovation Survey</h1>
+    
+    <!-- Loading state -->
+    <div id="loadingState" class="text-center py-8">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+      <p class="text-gray-600">Loading survey questions...</p>
+    </div>
+
+    <!-- Error state -->
+    <div id="errorState" class="hidden text-center py-8">
+      <div class="text-red-600 mb-4">
+        <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <p class="text-gray-600">Failed to load survey questions. Please refresh the page or try again later.</p>
+      <button onclick="loadQuestions()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Try Again
+      </button>
+    </div>
+    
+    <!-- Company display -->
+    <div id="companyInfo" class="mb-6 p-4 bg-blue-50 rounded-lg hidden">
+      <p class="text-blue-800">Loading company information...</p>
+    </div>
+
+    <!-- Survey form -->
+    <form id="surveyForm" class="space-y-6 hidden">
+      <div class="mb-4">
+        <div class="flex justify-between mb-1">
+          <span class="text-sm text-gray-600">Survey Progress</span>
+          <span id="progressText" class="text-sm text-gray-600">0%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div id="progressBar" class="bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div id="surveyContainer">
+        <!-- Questions will be dynamically populated -->
+      </div>
+
+      <div class="flex justify-between mt-6">
+        <button type="button" id="prevBtn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 hidden">Previous</button>
+        <button type="button" id="nextBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Next</button>
+      </div>
+    </form>
+
+    <!-- Status modal -->
+    <div id="statusModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div class="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+        <h3 id="statusTitle" class="text-xl font-bold mb-4"></h3>
+        <p id="statusMessage" class="text-gray-600 mb-4"></p>
+        <button id="statusClose" class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const CONFIG = {
+      QUESTIONS_URL: 'survey-questions.json',  // Replace with your JSON endpoint
+      BASEROW_API_TOKEN: 'ySU2fIwcC1uCxWtoaK5HJ6lfDASo2z9i',
+      BASEROW_TABLE_ID: '399241',
+      BASEROW_API_URL: `https://api.baserow.io/api/database/rows/table/399241/?user_field_names=true`
+    };
+
+    // State
+    let questions = [];
+    let currentSection = 0;
+    const responses = {
+      company_id: new URLSearchParams(window.location.search).get('company'),
+      submission_date: new Date().toISOString(),
+    };
+
+    // Load questions from JSON
+    async function loadQuestions() {
+      document.getElementById('loadingState').classList.remove('hidden');
+      document.getElementById('errorState').classList.add('hidden');
+      document.getElementById('surveyForm').classList.add('hidden');
+
+      try {
+        const response = await fetch(CONFIG.QUESTIONS_URL);
+        if (!response.ok) throw new Error('Failed to load questions');
+        
+        questions = await response.json();
+        
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('surveyForm').classList.remove('hidden');
+        document.getElementById('companyInfo').classList.remove('hidden');
+        
+        loadCompanyInfo();
+        showQuestion(0);
+      } catch (error) {
+        console.error('Failed to load questions:', error);
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('errorState').classList.remove('hidden');
+      }
+    }
+
+    // Question rendering functions
+    function createLikertScale() {
+      const options = [
+        "Strongly disagree",
+        "Disagree",
+        "Neither agree nor disagree",
+        "Agree",
+        "Strongly agree"
+      ];
+      
+      return options.map((option, index) => `
+        <label class="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
+          <input type="radio" name="likert" value="${index}" class="h-4 w-4 text-blue-600">
+          <span class="text-gray-700">${option}</span>
+        </label>
+      `).join('');
+    }
+
+    function createNumberScale(min, max, labels) {
+      let scale = '';
+      for (let i = min; i <= max; i++) {
+        scale += `
+          <div class="flex flex-col items-center">
+            <label class="flex flex-col items-center cursor-pointer">
+              <input type="radio" name="scale" value="${i}" class="h-4 w-4 text-blue-600 mb-2">
+              <span class="text-lg font-medium">${i}</span>
+            </label>
+            ${labels[i] ? `<span class="text-xs text-gray-500 text-center">${labels[i]}</span>` : ''}
+          </div>
+        `;
+      }
+      return `<div class="flex justify-between space-x-4 p-4">${scale}</div>`;
+    }
+
+    function createSelect(options) {
+      return `
+        <select name="select" class="w-full p-2 border rounded-md">
+          <option value="">Please select...</option>
+          ${options.map((option, index) => `
+            <option value="${index}">${option}</option>
+          `).join('')}
+        </select>
+      `;
+    }
+
+    function createRanking(options) {
+      return `
+        <div class="space-y-2">
+          <p class="text-sm text-gray-600 mb-2">Drag to reorder (top = most important)</p>
+          ${options.map((option, index) => `
+            <div class="flex items-center space-x-2 p-2 bg-gray-50 rounded cursor-move" draggable="true" data-index="${index}">
+              <span class="text-gray-400">${index + 1}.</span>
+              <span>${option}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function showQuestion(index) {
+      const question = questions[index];
+      const container = document.getElementById('surveyContainer');
+      
+      let questionHTML = `
+        <div class="mb-6">
+          <h2 class="text-lg font-medium mb-4">${question.text}</h2>
+          ${question.type === 'likert' ? createLikertScale() :
+            question.type === 'scale' ? createNumberScale(question.min, question.max, question.labels) :
+            question.type === 'select' ? createSelect(question.options) :
+            question.type === 'ranking' ? createRanking(question.options) : ''}
+        </div>
+      `;
+      
+      container.innerHTML = questionHTML;
+      
+      if (question.type === 'ranking') {
+        initRanking();
+      }
+      
+      updateProgress();
+    }
+
+    // Progress and navigation
+    function updateProgress() {
+      const progress = ((currentSection + 1) / questions.length) * 100;
+      document.getElementById('progressBar').style.width = `${progress}%`;
+      document.getElementById('progressText').textContent = `${Math.round(progress)}%`;
+      
+      document.getElementById('prevBtn').classList.toggle('hidden', currentSection === 0);
+      document.getElementById('nextBtn').textContent = 
+        currentSection === questions.length - 1 ? 'Submit' : 'Next';
+    }
+
+    // Baserow submission
+    async function submitToBaserow(data) {
+      try {
+        const response = await fetch(CONFIG.BASEROW_API_URL, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Token ${CONFIG.BASEROW_API_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit survey');
+        }
+
+        showStatus(true, 'Thank you for completing the survey! Your responses have been recorded.');
+      } catch (error) {
+        showStatus(false, 'There was an error submitting the survey. Please try again or contact support.');
+        console.error('Submission error:', error);
+      }
+    }
+
+    // Status display
+    function showStatus(success, message) {
+      const modal = document.getElementById('statusModal');
+      const title = document.getElementById('statusTitle');
+      const messageEl = document.getElementById('statusMessage');
+      
+      title.textContent = success ? 'Success!' : 'Error';
+      messageEl.textContent = message;
+      modal.classList.remove('hidden');
+    }
+
+    // Event listeners
+    document.getElementById('nextBtn').addEventListener('click', async () => {
+      const selectedValue = document.querySelector('input[type="radio"]:checked')?.value || 
+                          document.querySelector('select')?.value;
+      
+      if (!selectedValue) {
+        alert('Please select an answer before continuing');
+        return;
+      }
+      
+      responses[`question_${questions[currentSection].id}`] = selectedValue;
+      
+      if (currentSection < questions.length - 1) {
+        currentSection++;
+        showQuestion(currentSection);
+      } else {
+        await submitToBaserow(responses);
+      }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentSection > 0) {
+        currentSection--;
+        showQuestion(currentSection);
+      }
+    });
+
+    document.getElementById('statusClose').addEventListener('click', () => {
+      document.getElementById('statusModal').classList.add('hidden');
+    });
+
+    // Initialize
+    if (!responses.company_id) {
+      showStatus(false, 'No company ID provided. Please check the URL and try again.');
+    } else {
+      loadQuestions();
+    }
+  </script>
+</body>
+</html>

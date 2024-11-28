@@ -1,0 +1,274 @@
+{
+    "questions": [
+        {
+          id: 1,
+          text: "Imagine an ideal organization utilizing digital technologies and capabilities to improve processes, engage talent across the organization, and drive new and value-generating business models. How close is your organization to that ideal?",
+          type: "scale",
+          min: 1,
+          max: 10,
+          labels: {
+            1: "Not at all close",
+            10: "Very close"
+          }
+        },
+        {
+          id: 2,
+          text: "My organization has moved significantly closer to that ideal over the past three years.",
+          type: "likert"
+        },
+        {
+          id: 3,
+          text: "Digital innovation is a strength of my organization.",
+          type: "likert"
+        },
+        {
+          id: 4,
+          text: "My organization's leaders think that digital innovation is or should be a core competency of our organization.",
+          type: "likert"
+        },
+        {
+          id: 5,
+          text: "My organization provides enough resources (time, money, people) to support innovation.",
+          type: "likert"
+        },
+        {
+          id: 6,
+          text: "My organization cultivates or supports an entrepreneurial mindset among its employees.",
+          type: "likert"
+        },
+        {
+          id: 7,
+          text: "What portion of your work involves the opportunity to experiment and innovate?",
+          type: "select",
+          options: [
+            "No time at all",
+            "<10%",
+            "10-24%",
+            "25-49%",
+            "50-75%",
+            ">75%"
+          ]
+        },
+        {
+          id: 8,
+          text: "My organization cultivates partnerships with other organizations to facilitate digital innovation.",
+          type: "likert"
+        },
+        {
+          id: 9,
+          text: "It is important that my organization is located geographically close to our external partners for digital innovation.",
+          type: "likert"
+        },
+        {
+          id: 10,
+          text: "My organization's external partnerships are vital to its digital innovation efforts.",
+          type: "likert"
+        },
+        {
+          id: 11,
+          text: "My organization partners with the following types of organizations to support digital innovation.",
+          type: "ranking",
+          options: [
+            "Suppliers",
+            "Customers",
+            "Startups",
+            "Academia",
+            "Governments",
+            "Competitors",
+            "Nonprofits"
+          ]
+        },
+        {
+          id: 12,
+          text: "My organization receives the following benefits from our external partnerships with respect to digital innovation.",
+          type: "ranking",
+          options: [
+            "Access to new ideas to grow or improve our business",
+            "Ability to develop new knowledge and skills",
+            "Access to additional talent/expertise",
+            "Infrastructure to scale opportunities",
+            "Access to new markets",
+            "Cultural exposure",
+            "Additional team members to help us scale our efforts",
+            "Funding/investments/resources"
+          ]
+        },
+        {
+          id: 13,
+          text: "My organization engages in external partnerships to access new sources of data.",
+          type: "likert"
+        },
+        {
+          id: 14,
+          text: "What is the biggest challenge associated with effectively leveraging partnerships and networks to increase digital innovations?",
+          type: "select",
+          options: [
+            "Alignment of goals and strategy",
+            "Changing the culture and mindset",
+            "Finding the right partnerships",
+            "Acceptance by all levels of the company",
+            "Effective execution",
+            "Financial constraints",
+            "Time constraints",
+            "Access to resources like skills and technologies for successful change",
+            "Lack of digital understanding",
+            "Privacy issues"
+          ]
+        },
+        {
+          id: 15,
+          text: "My organization is currently using cross-functional teams or work groups to get work done.",
+          type: "likert"
+        },
+        {
+          id: 16,
+          text: "Cross-functional teams work effectively in our organization to support digital business.",
+          type: "likert"
+        },
+        {
+          id: 17,
+          text: "Cross-functional team leaders in my organization have considerable autonomy regarding how to accomplish team goals.",
+          type: "likert"
+        },
+        {
+          id: 18,
+          text: "My organization effectively evaluates the performance of cross-functional teams as a unit.",
+          type: "likert"
+        },
+        {
+          id: 19,
+          text: "Our organization's senior leadership effectively creates an environment in which our cross-functional teams can succeed.",
+          type: "likert"
+        },
+        {
+          id: 20,
+          text: "Cross-functional teams in my organization share lessons learned from their successes and failures with others in the organization.",
+          type: "likert"
+        },
+        {
+          id: 21,
+          text: "Cultural differences across functions enable/hinder the effectiveness of our cross-functional teams.",
+          type: "select",
+          options: [
+            "Strongly hinder",
+            "Hinder",
+            "Neither hinder nor enable",
+            "Enable",
+            "Strongly enable"
+          ]
+        },
+        {
+          id: 22,
+          text: "What is the biggest barrier to effectiveness in cross-functional teams?",
+          type: "select",
+          options: [
+            "Team alignment and governance",
+            "Unsupportive individual attitudes and motivations",
+            "Unsupportive company culture",
+            "Insufficient resources",
+            "Lack of leadership commitment, incentive, involvement, and vision",
+            "Process and workload challenges",
+            "Skill set and experience gaps"
+          ]
+        },
+        {
+          id: 23,
+          text: "Digital technologies or innovation have increased our organization's concerns around privacy.",
+          type: "likert"
+        },
+        {
+          id: 24,
+          text: "How is working in a cross-functional team different than working in a traditional team?",
+          type: "select",
+          options: [
+            "Enhanced access to resources",
+            "Additional operational complexity",
+            "Cultural benefits (empowerment, better communication)",
+            "More agile and efficient",
+            "Organization is less bureaucratic and siloed"
+          ]
+        },
+        {
+          id: 25,
+          text: "Our organization's leaders spend enough time thinking about and communicating the impact our organization's digital initiatives have on society.",
+          type: "likert"
+        },
+        {
+          id: 26,
+          text: "Other than privacy, what is your biggest social/ethical concern brought about by digital innovation?",
+          type: "select",
+          options: [
+            "Cybersecurity risks",
+            "Loss of data integrity",
+            "Strategic organizational issues (marketplace uncertainty, job replacement)",
+            "Negative impact to culture (increased bias, loss of transparency)",
+            "Loss of human connections",
+            "None"
+          ]
+        },
+        {
+          id: 27,
+          text: "My organization acts according to the values and ethics communicated by our leaders.",
+          type: "likert"
+        },
+        {
+          id: 28,
+          text: "Our organization has explicit policies in place to support our ethical standards with respect to our organization's digital initiatives.",
+          type: "likert"
+        },
+        {
+          id: 29,
+          text: "The laws or regulatory frameworks governing our industry adequately address how business is conducted in a digital world.",
+          type: "likert"
+        },
+        {
+          id: 30,
+          text: "Everyone in our organization at all levels is held to the same ethical standard.",
+          type: "likert"
+        },
+        {
+          id: 31,
+          text: "Society will be better off in 10 to 20 years than it is today as a result of digital technology.",
+          type: "likert"
+        },
+        {
+          id: 32,
+          text: "I spend time thinking about what my career will look like in 10 years and what I need to do to prepare.",
+          type: "likert"
+        },
+        {
+          id: 33,
+          text: "My career in the next 10 years will be better off as a result of digital trends.",
+          type: "likert"
+        },
+        {
+          id: 34,
+          text: "In 10 to 20 years, as a result of digital trends, my organization will:",
+          type: "select",
+          options: [
+            "Not exist (either will be out of business or bought by another company)",
+            "Exist but be in a much weaker position",
+            "Exist but be in a weaker position",
+            "Exist and be no better or worse off",
+            "Exist but be in a stronger position",
+            "Exist but be in a much stronger position"
+          ]
+        },
+        {
+          id: 35,
+          text: "Why do you think your organization will be in that position in 10 to 20 years?",
+          type: "select",
+          options: [
+            "Digital capabilities (or lack thereof)",
+            "Leadership capabilities (or gaps)",
+            "Market forces",
+            "Cultural strengths (or issues)"
+          ]
+        },
+        {
+          id: 36,
+          text: "I will be in a fundamentally different career in 10 years than I am today as a result of digital trends.",
+          type: "likert"
+        }
+      ]
+  }
