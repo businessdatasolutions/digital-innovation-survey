@@ -2,6 +2,7 @@
   "videos": [
     {
       "title": "A Plan is Not a Strategy by Roger Martin",
+      "label": "martin",
       "videoUrl": "https://www.youtube.com/embed/iuYlGRnC7J8?si=0IBLrvM9KZJbCCJp",
       "instructions": [
         "Watch the video below.",
@@ -13,6 +14,7 @@
     },
     {
       "title": "The Infinite Game by Simon Sinek",
+      "label": "sinek",
       "videoUrl": "https://www.youtube.com/embed/tye525dkfi8?si=IcddpK48MBcV_SRB",
       "instructions": [
         "Watch the video below.",
@@ -24,6 +26,7 @@
     },
     {
       "title": "What is Strategy? It’s a Lot Simpler Than You Think by Felix Oberholzer-Gee",
+      "label": "oberholzer",
       "videoUrl": "https://www.youtube.com/embed/o7Ik1OB4TaE?si=bV4HExfi2GCR-U_P",
       "instructions": [
         "Watch the video below.",
@@ -35,6 +38,7 @@
     },
     {
       "title": "Why Strategy Always Beats Talent by Seth Godin",
+      "label": "godin",
       "videoUrl": "https://www.youtube.com/embed/AZeCxY5yHUY?si=4ZlwdBSpl0Yv9b0e",
       "instructions": [
         "Watch the video below.",
@@ -58,25 +62,25 @@
       {
         "stepNumber": 1,
         "title": "Defining Strategy vs. Planning",
-        "watch": "Source (0:00-4:30)",
+        "watch": "<a href='#martin'>Source</a> (0:00-4:30)",
         "reflect": "Consider your own professional experiences. Have you encountered situations where planning was mistaken for strategy? What were the consequences?"
       },
       {
         "stepNumber": 2,
         "title": "Identifying Your Game",
-        "watch": "Source (0:00-4:00) and Source (0:00-3:30)",
+        "watch": "<a href='#sinek'>Source</a> (0:00-4:00)",
         "reflect": "Is your business context a finite or infinite game? How does this understanding impact your strategic approach?"
       },
       {
         "stepNumber": 3,
         "title": "Understanding Value Creation",
-        "watch": "Source (0:00-6:00)",
+        "watch": "<a href='#oberholzer'>Source</a> (0:00-6:00)",
         "reflect": "Using the value stick concept, analyse a recent project or initiative. How was value created for customers, employees, and the company?"
       },
       {
         "stepNumber": 4,
         "title": "Crafting Your Just Cause",
-        "watch": "Source (0:00-4:00) and Source (0:00-3:00)",
+        "watch": "<a href='#sinek'>Source</a> (0:00-4:00)",
         "reflect": "What is the deeper purpose behind your business or project? Articulate a compelling Just Cause that inspires commitment and sacrifice."
       },
       {

@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       card.innerHTML = `
         <div class="card">
-          <div class="card-content">
+          <div class="card-content" id="${video.label}">
             <span class="card-title">${video.title}</span>
             <ul class="collapsible">
               <li>
