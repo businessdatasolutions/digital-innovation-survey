@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="card-content">
               <span class="card-title">Step ${step.stepNumber}: ${step.title}</span>
               <p><strong>Task:</strong> ${step.task}</p>
-              <ul>
+              <ul class="browser-default">
                 ${step.components.map(component => `<li>${component}</li>`).join('')}
               </ul>
               <p><strong>Description:</strong> ${step.description}</p>
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (assignment.resources && assignment.resources.length > 0) {
       resourcesHTML += `
         <h5>Additional Resources:</h5>
-        <ul>
+        <ul class="browser-default">
           ${assignment.resources.map(resource => `<li><a href="${resource.url}" target="_blank">${resource.name}</a></li>`).join('')}
         </ul>
       `;
