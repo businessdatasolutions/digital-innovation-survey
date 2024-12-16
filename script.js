@@ -27,13 +27,14 @@ document.addEventListener('DOMContentLoaded', function() {
       // Create card element
       const card = document.createElement('div');
       card.className = 'col s12 m6'; // Responsive columns
+      card.id = video.label; // Assign unique ID to the card
 
       // Generate unique IDs for collapsible components
       const collapsibleId = `collapsible-${index}`;
 
       card.innerHTML = `
         <div class="card">
-          <div class="card-content" id="${video.label}">
+          <div class="card-content">
             <span class="card-title">${video.title}</span>
             <ul class="collapsible">
               <li>
@@ -55,6 +56,28 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
       container.appendChild(card);
     });
+
+    // Add event listener for hash changes to highlight the active card
+    window.addEventListener('hashchange', function() {
+      const hash = window.location.hash.substring(1); // Remove the '#'
+      if (hash) {
+        // Remove 'active' class from all cards
+        const allCards = document.querySelectorAll('.card');
+        allCards.forEach(c => c.classList.remove('active'));
+
+        // Add 'active' class to the targeted card
+        const targetCard = document.getElementById(hash);
+        if (targetCard) {
+          targetCard.classList.add('active');
+        }
+      }
+    });
+
+    // Trigger hashchange on page load if there's a hash
+    if (window.location.hash) {
+      const event = new Event('hashchange');
+      window.dispatchEvent(event);
+    }
   }
 
   // Function to render audio summary
@@ -65,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update description if needed
     const description = document.querySelector('.card-content p strong');
     if (description) {
-      description.textContent = audio.description;
+      description.innerHTML = audio.description;
     }
 
     // Update title if needed
@@ -93,15 +116,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create Steps
     let stepsHTML = '';
     assignment.steps.forEach(step => {
-      stepsHTML += `
-        <div class="card">
-          <div class="card-content">
-            <span class="card-title">Step ${step.stepNumber}: ${step.title}</span>
-            <p><strong>Watch:</strong> ${step.watch}</p>
-            <p><strong>Reflect:</strong> ${step.reflect}</p>
+      if (step.task && step.components && step.description) {
+        // Render steps with task and components (e.g., Step 6)
+        stepsHTML += `
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">Step ${step.stepNumber}: ${step.title}</span>
+              <p><strong>Task:</strong> ${step.task}</p>
+              <ul>
+                ${step.components.map(component => `<li>${component}</li>`).join('')}
+              </ul>
+              <p><strong>Description:</strong> ${step.description}</p>
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      } else {
+        // Render regular steps with watch and reflect
+        stepsHTML += `
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">Step ${step.stepNumber}: ${step.title}</span>
+              <p><strong>Watch:</strong> ${step.watch}</p>
+              <p><strong>Reflect:</strong> ${step.reflect}</p>
+            </div>
+          </div>
+        `;
+      }
     });
 
     // Create Final Deliverable

@@ -10,6 +10,11 @@
   <!-- Responsive Meta Tag -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
+    /* Smooth Scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+    /* Video Container Styling */
     .video-container {
       position: relative;
       padding-bottom: 56.25%; /* 16:9 */
@@ -23,15 +28,22 @@
       width: 100%;
       height: 100%;
     }
+    /* Section Header Styling */
     .section-header {
       margin-top: 40px;
       margin-bottom: 20px;
     }
+    /* Audio Container Styling */
     .audio-container {
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 20px 0;
+    }
+    /* Active Card Highlighting */
+    .card.active {
+      border: 2px solid #26a69a; /* Teal accent */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
   </style>
 </head>
@@ -61,7 +73,7 @@
         <div class="card-action">
           <div class="audio-container">
             <audio controls>
-              <source src="media/strategy.wav" type="audio/mpeg">
+              <source src="media/strategy.wav" type="audio/wav">
               Your browser does not support the audio element.
             </audio>
           </div>
