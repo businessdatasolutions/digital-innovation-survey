@@ -1,0 +1,123 @@
+{
+  "videos": [
+    {
+      "title": "A Plan is Not a Strategy by Roger Martin",
+      "videoUrl": "https://www.youtube.com/embed/iuYlGRnC7J8?si=0IBLrvM9KZJbCCJp",
+      "instructions": [
+        "Watch the video below.",
+        "In your group, discuss and formulate:",
+        "A concise definition of strategy, according to Roger Martin.",
+        "The key elements of a successful strategy, as highlighted by Martin.",
+        "What is the main focus or priority that Martin places on strategy development? What does he consider the most important aspect, and what is the ultimate objective or purpose of a good strategy, according to him?"
+      ]
+    },
+    {
+      "title": "The Infinite Game by Simon Sinek",
+      "videoUrl": "https://www.youtube.com/embed/tye525dkfi8?si=IcddpK48MBcV_SRB",
+      "instructions": [
+        "Watch the video below.",
+        "In your group, discuss and formulate:",
+        "A concise definition of strategy, according to Simon Sinek.",
+        "The key elements of a successful strategy, as highlighted by Sinek.",
+        "What is the main focus or priority that Sinek places on strategy development? What does he consider the most important aspect, and what is the ultimate objective or purpose of a good strategy, according to him?"
+      ]
+    },
+    {
+      "title": "What is Strategy? It’s a Lot Simpler Than You Think by Felix Oberholzer-Gee",
+      "videoUrl": "https://www.youtube.com/embed/o7Ik1OB4TaE?si=bV4HExfi2GCR-U_P",
+      "instructions": [
+        "Watch the video below.",
+        "In your group, discuss and formulate:",
+        "A concise definition of strategy, according to Felix Oberholzer-Gee.",
+        "The key elements of a successful strategy, as highlighted by Oberholzer-Gee.",
+        "What is the main focus or priority that Oberholzer-Gee places on strategy development? What does he consider the most important aspect, and what is the ultimate objective or purpose of a good strategy, according to him?"
+      ]
+    },
+    {
+      "title": "Why Strategy Always Beats Talent by Seth Godin",
+      "videoUrl": "https://www.youtube.com/embed/AZeCxY5yHUY?si=4ZlwdBSpl0Yv9b0e",
+      "instructions": [
+        "Watch the video below.",
+        "In your group, discuss and formulate:",
+        "A concise definition of strategy, according to Seth Godin.",
+        "The key elements of a successful strategy, as highlighted by Godin.",
+        "What is the main focus or priority that Godin places on strategy development? What does he consider the most important aspect, and what is the ultimate objective or purpose of a good strategy, according to him?"
+      ]
+    }
+  ],
+  "audioSummary": {
+    "title": "Group Discussion Audio Summary",
+    "audioUrl": "media/strategy.wav",
+    "description": "Listen to the group discussion summary of all four videos below:"
+  },
+  "assignment": {
+    "title": "Assignment: Developing Your Individual Strategy Blueprint",
+    "outcome": "A personal strategy blueprint for a specific business case using a unique strategy framework.",
+    "instructions": "This assignment will guide you through creating a personalised strategy blueprint by synthesising key concepts from the sources. Each step involves reflection tasks to help you make informed choices.",
+    "steps": [
+      {
+        "stepNumber": 1,
+        "title": "Defining Strategy vs. Planning",
+        "watch": "Source (0:00-4:30)",
+        "reflect": "Consider your own professional experiences. Have you encountered situations where planning was mistaken for strategy? What were the consequences?"
+      },
+      {
+        "stepNumber": 2,
+        "title": "Identifying Your Game",
+        "watch": "Source (0:00-4:00) and Source (0:00-3:30)",
+        "reflect": "Is your business context a finite or infinite game? How does this understanding impact your strategic approach?"
+      },
+      {
+        "stepNumber": 3,
+        "title": "Understanding Value Creation",
+        "watch": "Source (0:00-6:00)",
+        "reflect": "Using the value stick concept, analyse a recent project or initiative. How was value created for customers, employees, and the company?"
+      },
+      {
+        "stepNumber": 4,
+        "title": "Crafting Your Just Cause",
+        "watch": "Source (0:00-4:00) and Source (0:00-3:00)",
+        "reflect": "What is the deeper purpose behind your business or project? Articulate a compelling Just Cause that inspires commitment and sacrifice."
+      },
+      {
+        "stepNumber": 5,
+        "title": "Choosing Your Strategic Elements",
+        "watch": "Review all Sources",
+        "strategicConcepts": [
+          "Playing to Win (Source): Focus on a clear theory of victory, not just a list of activities.",
+          "Customer-Centric Outcomes (Source): Define success based on customer behaviour and market response.",
+          "Playing the Infinite Game (Source): Embrace adaptability, evolving rules, and the pursuit of longevity.",
+          "Value Stick Components (Source): Strategically leverage willingness to pay, willingness to sell, and margins.",
+          "Courageous Leadership (Source): Prioritise long-term vision and ethical decision-making.",
+          "Trusting Teams (Source): Foster an environment of psychological safety and open communication.",
+          "Worthy Rivals (Source): Use competitors as benchmarks for improvement and innovation.",
+          "Choosing Your Customers (Source): Define your ideal target audience and tailor your approach accordingly."
+        ],
+        "reflect": "Select 3-4 strategic elements that resonate most strongly with you and your business case. Justify your choices."
+      },
+      {
+        "stepNumber": 6,
+        "title": "Building Your Strategy Blueprint",
+        "task": "Create a concise, one-page strategy blueprint outlining the following:",
+        "components": [
+          "Business Case: Briefly describe the specific challenge or opportunity you're addressing.",
+          "Just Cause: State your overarching purpose and desired impact.",
+          "Chosen Strategic Elements: List the 3-4 elements you selected.",
+          "Actionable Strategies: For each element, define 2-3 specific actions you'll take to apply it to your business case."
+        ],
+        "description": "This individual blueprint will serve as your roadmap for strategic decision-making and action. By grounding your choices in a clear framework and purposeful vision, you can navigate complexity and achieve meaningful results."
+      }
+    ],
+    "finalDeliverable": "Submit your personal strategy blueprint in a concise, one-page document.",
+    "resources": [
+      {
+        "name": "SWOT Analysis Template",
+        "url": "#"
+      },
+      {
+        "name": "Strategy Development Guide",
+        "url": "#"
+      }
+    ]
+  }
+}
